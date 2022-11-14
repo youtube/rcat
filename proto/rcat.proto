@@ -1,0 +1,56 @@
+// Copyright 2022 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto2";
+
+package google.rcat.proto;
+
+option java_package = "com.google.rcat.proto";
+option java_multiple_files = true;
+option cc_api_version = 2;
+option cc_enable_arenas = true;
+option go_api_flag = "OPAQUE_V0";
+
+/**
+ * Proto description of the Randomized Counter Abuse Token.
+ * This is serialized to a byte-string, base64 encoded, and expressed as a UTF-8
+ * string before being sent to the third-party.
+ */
+message RandomizedCounterAbuseToken {
+  // Encrypted RCAT object, represented as `RandomizedCounterAbuseTokenEnvelope`
+  // (see below).
+  optional bytes ciphertext = 1;
+}
+
+/**
+ * This contains serialized and signed RCAT payload, a signature over the
+ * payload and the issuer_id which is signing the payload. The whole envelope is
+ * encrypted.
+ */
+message RandomizedCounterAbuseTokenEnvelope {
+  optional uint32 issuer_id = 1;  // Unique issuer ID assigned out of band.
+  optional bytes signature = 2;   // Signature over the payload.
+  optional bytes payload = 3;     // The `RandomizedCounterAbuseTokenPayload`.
+}
+
+/**
+ * This is the RCAT payload that remains private to the 1P and 3P services.
+ * It is encrypted using the 3P public key and signed using the 1P private
+ * key.
+ */
+message RandomizedCounterAbuseTokenPayload {
+  optional uint64 group_id = 1;  // Group of the user associated with this RCAT.
+  optional uint64 content_binding = 2;     // Content binding integer value.
+  optional uint64 expiration_utc_sec = 3;  // UTC time of RCAT expiration.
+}

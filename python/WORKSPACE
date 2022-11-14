@@ -1,0 +1,22 @@
+workspace(name = "rcat_py")
+
+local_repository(
+    name = "rcat_base",
+    path = "..",
+)
+
+load("@rcat_py//:rcat_py_deps.bzl", "rcat_py_deps")
+
+rcat_py_deps()
+
+load("@rcat_py//:rcat_py_deps_init.bzl", "rcat_py_deps_init")
+
+rcat_py_deps_init("rcat_py")
+
+load("@rcat_base//:rcat_reference_impl_deps.bzl", "rcat_reference_impl_deps")
+
+rcat_reference_impl_deps()
+
+load("@rcat_base//:rcat_reference_impl_deps_init.bzl", "rcat_reference_impl_deps_init")
+
+rcat_reference_impl_deps_init()

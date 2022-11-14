@@ -1,0 +1,77 @@
+package(default_visibility = ["//src:__subpackages__"])
+
+licenses(["notice"])
+
+java_library(
+    name = "rcat_utils",
+    srcs = ["RcatUtils.java"],
+    deps = [
+        "//external/deps:error_prone_annotations",
+        "//external/deps:guava",
+    ],
+)
+
+java_library(
+    name = "rcat_crypto",
+    srcs = ["RcatCrypto.java"],
+    deps = [
+        "//external/deps:error_prone_annotations",
+        "//src/main/java/com/google/rcat/error",
+    ],
+)
+
+java_library(
+    name = "rcat_tink_crypto",
+    srcs = ["RcatTinkCrypto.java"],
+    deps = [
+        ":rcat_crypto",
+        "//external/deps:error_prone_annotations",
+        "//external/deps:tink",
+        "//src/main/java/com/google/rcat/error",
+    ],
+)
+
+java_library(
+    name = "rcat_jce_crypto",
+    srcs = ["RcatJceCrypto.java"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":rcat_crypto",
+        "//external/deps:autovalue",
+        "//external/deps:autovalue_annotations",
+        "//external/deps:error_prone_annotations",
+        "//external/deps:guava",
+        "//src/main/java/com/google/rcat/error",
+    ],
+)
+
+java_library(
+    name = "rcat_issuer",
+    srcs = ["RcatIssuer.java"],
+    deps = [
+        ":rcat_crypto",
+        ":rcat_utils",
+        "//external/deps:autovalue",
+        "//external/deps:autovalue_annotations",
+        "//external/deps:error_prone_annotations",
+        "//external/deps:guava",
+        "//external/deps:protobuf_java",
+        "//proto:rcat_java_proto",
+        "//src/main/java/com/google/rcat/error",
+    ],
+)
+
+java_library(
+    name = "rcat_verifier",
+    srcs = ["RcatVerifier.java"],
+    deps = [
+        ":rcat_crypto",
+        ":rcat_utils",
+        "//external/deps:autovalue",
+        "//external/deps:autovalue_annotations",
+        "//external/deps:error_prone_annotations",
+        "//external/deps:protobuf_java",
+        "//proto:rcat_java_proto",
+        "//src/main/java/com/google/rcat/error",
+    ],
+)
