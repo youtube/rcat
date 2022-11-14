@@ -1,0 +1,32 @@
+workspace(name = "rcat_java")
+
+local_repository(
+    name = "rcat_base",
+    path = "..",
+)
+
+load("@rcat_base//:rcat_reference_impl_deps.bzl", "rcat_reference_impl_deps")
+
+rcat_reference_impl_deps()
+
+load("@rcat_base//:rcat_reference_impl_deps_init.bzl", "rcat_reference_impl_deps_init")
+
+rcat_reference_impl_deps_init()
+
+load("@rcat_java//:rcat_java_deps.bzl", "MAVEN_ARTIFACTS", "rcat_java_deps")
+
+rcat_java_deps()
+
+load("@rcat_java//:rcat_java_deps_init.bzl", "rcat_java_deps_init")
+
+rcat_java_deps_init()
+
+load("@rules_jvm_external//:defs.bzl", "maven_install")
+
+maven_install(
+    artifacts = MAVEN_ARTIFACTS,
+    repositories = [
+        "https://maven.google.com",
+        "https://repo1.maven.org/maven2",
+    ],
+)

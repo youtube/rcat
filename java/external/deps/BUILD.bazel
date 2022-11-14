@@ -1,0 +1,70 @@
+package(default_visibility = ["//src:__subpackages__"])
+
+alias(
+    name = "autovalue_annotations",
+    actual = "@maven//:com_google_auto_value_auto_value_annotations",
+)
+
+alias(
+    name = "autovalue_processor",
+    actual = "@maven//:com_google_auto_value_auto_value",
+)
+
+alias(
+    name = "error_prone_annotations",
+    actual = "@maven//:com_google_errorprone_error_prone_annotations",
+)
+
+alias(
+    name = "guava",
+    actual = "@maven//:com_google_guava_guava",
+)
+
+alias(
+    name = "junit",
+    actual = "@maven//:junit_junit",
+)
+
+alias(
+    name = "protobuf_java",
+    actual = "@maven//:com_google_protobuf_protobuf_java",
+)
+
+alias(
+    name = "tink",
+    actual = "@maven//:com_google_crypto_tink_tink",
+)
+
+alias(
+    name = "truth",
+    actual = "@maven//:com_google_truth_truth",
+)
+
+# AutoValue / AutoBuilder
+java_plugin(
+    name = "autobuilder_plugin",
+    processor_class = "com.google.auto.value.processor.AutoBuilderProcessor",
+    deps = [":autovalue_processor"],
+)
+
+java_plugin(
+    name = "autovalue_plugin",
+    processor_class = "com.google.auto.value.processor.AutoValueProcessor",
+    deps = [":autovalue_processor"],
+)
+
+java_plugin(
+    name = "autovalue_builder_plugin",
+    processor_class = "com.google.auto.value.processor.AutoValueBuilderProcessor",
+    deps = [":autovalue_processor"],
+)
+
+java_library(
+    name = "autovalue",
+    exported_plugins = [
+        ":autobuilder_plugin",
+        ":autovalue_builder_plugin",
+        ":autovalue_plugin",
+    ],
+    neverlink = True,
+)

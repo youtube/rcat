@@ -1,0 +1,18 @@
+licenses(["notice"])
+
+package(default_visibility = ["//visibility:private"])
+
+java_test(
+    name = "RcatProtobufWireFormatHelperTest",
+    size = "small",
+    srcs = ["RcatProtobufWireFormatHelperTest.java"],
+    test_class = "com.google.rcat.helpers.RcatProtobufWireFormatHelperTest",
+    deps = [
+        "//external/deps:guava",
+        "//external/deps:junit",
+        "//external/deps:protobuf_java",
+        "//external/deps:truth",
+        "//proto:rcat_java_proto",
+        "//src/main/java/com/google/rcat/helpers:rcat_protobuf_wire_format_helper",
+    ],
+)

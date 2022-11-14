@@ -1,0 +1,31 @@
+load("@rcat_py_pip_deps//:requirements.bzl", "requirement")
+
+package(default_visibility = ["//:__subpackages__"])
+
+licenses(["notice"])
+
+py_library(
+    name = "rcat_server",
+    srcs = ["rcat_server.py"],
+    srcs_version = "PY3",
+    deps = [
+        requirement("tink"),
+        requirement("protobuf"),
+        "//rcat/proto:rcat_py_pb2",
+    ],
+)
+
+py_test(
+    name = "rcat_test",
+    size = "small",
+    srcs = [
+        "rcat_base_test.py",
+        "rcat_test.py",
+    ],
+    srcs_version = "PY3",
+    deps = [
+        ":rcat_server",
+        requirement("absl-py"),
+        requirement("tink"),
+    ],
+)

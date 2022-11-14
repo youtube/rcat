@@ -1,0 +1,9 @@
+package(default_visibility = ["//visibility:public"])
+
+java_library(
+    name = "rcat_protobuf_wire_format_helper",
+    srcs = ["RcatProtobufWireFormatHelper.java"],
+    deps = [
+        "//external/deps:guava",
+    ],
+)

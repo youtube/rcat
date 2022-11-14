@@ -1,0 +1,18 @@
+package(default_visibility = ["//src:__subpackages__"])
+
+java_library(
+    name = "error",
+    srcs = [
+        "RcatDecryptionException.java",
+        "RcatEncryptionException.java",
+        "RcatExpiredException.java",
+        "RcatInvalidContentBindingException.java",
+        "RcatIssuanceException.java",
+        "RcatParsingException.java",
+        "RcatSignatureValidationException.java",
+        "RcatSigningException.java",
+        "RcatUnknownIssuerIdException.java",
+        "RcatVerificationException.java",
+    ],
+    deps = [],
+)

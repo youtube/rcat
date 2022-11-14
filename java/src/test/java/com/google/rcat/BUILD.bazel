@@ -1,0 +1,89 @@
+package(
+    default_visibility = ["//visibility:private"],
+)
+
+licenses(["notice"])
+
+java_library(
+    name = "rcat_base_test",
+    testonly = 1,
+    srcs = ["RcatBaseTest.java"],
+    deps = [
+        "//external/deps:junit",
+        "//external/deps:tink",
+        "//external/deps:truth",
+    ],
+)
+
+java_test(
+    name = "RcatExceptionTest",
+    size = "small",
+    srcs = ["RcatExceptionTest.java"],
+    test_class = "com.google.rcat.RcatExceptionTest",
+    deps = [
+        ":rcat_base_test",
+        "//external/deps:junit",
+        "//external/deps:protobuf_java",
+        "//external/deps:tink",
+        "//proto:rcat_java_proto",
+        "//src/main/java/com/google/rcat:rcat_issuer",
+        "//src/main/java/com/google/rcat:rcat_tink_crypto",
+        "//src/main/java/com/google/rcat:rcat_utils",
+        "//src/main/java/com/google/rcat:rcat_verifier",
+        "//src/main/java/com/google/rcat/error",
+    ],
+)
+
+java_test(
+    name = "RcatTest",
+    size = "small",
+    srcs = ["RcatTest.java"],
+    test_class = "com.google.rcat.RcatTest",
+    deps = [
+        ":rcat_base_test",
+        "//external/deps:junit",
+        "//proto:rcat_java_proto",
+        "//src/main/java/com/google/rcat:rcat_issuer",
+        "//src/main/java/com/google/rcat:rcat_tink_crypto",
+        "//src/main/java/com/google/rcat:rcat_utils",
+        "//src/main/java/com/google/rcat:rcat_verifier",
+    ],
+)
+
+java_test(
+    name = "RcatUtilsTest",
+    size = "small",
+    srcs = ["RcatUtilsTest.java"],
+    test_class = "com.google.rcat.RcatUtilsTest",
+    deps = [
+        "//external/deps:guava",
+        "//external/deps:junit",
+        "//external/deps:truth",
+        "//src/main/java/com/google/rcat:rcat_utils",
+    ],
+)
+
+java_test(
+    name = "RcatJceTest",
+    size = "small",
+    srcs = ["RcatJceTest.java"],
+    data = [
+        "issuer-private-keyset-jce-test-only.tink.json",
+    ],
+    test_class = "com.google.rcat.RcatJceTest",
+    deps = [
+        ":rcat_base_test",
+        "//external/deps:guava",
+        "//external/deps:junit",
+        "//external/deps:tink",
+        "//external/deps:truth",
+        "//proto:rcat_java_proto",
+        "//src/main/java/com/google/rcat:rcat_issuer",
+        "//src/main/java/com/google/rcat:rcat_jce_crypto",
+        "//src/main/java/com/google/rcat:rcat_tink_crypto",
+        "//src/main/java/com/google/rcat:rcat_utils",
+        "//src/main/java/com/google/rcat:rcat_verifier",
+        "//src/main/java/com/google/rcat/error",
+        "@bazel_tools//tools/java/runfiles",
+    ],
+)
