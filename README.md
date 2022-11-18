@@ -8,58 +8,53 @@ Please provide feedback to rcat-discuss@googlegroups.com
 
 ## Motivation
 
-Consumption of third-party content is quite popular in both the mobile app and
-web ecosystems. For example, consider a news application that loads videos or
-images made by a content creator and hosted by a third party website. This
-scenario can be generalized to any website or app that loads embedded web
-content from a third-party content provider where individual content creators
-and not the third-party content provider own the content. The embedded content
-could be audio, video, a social media post, or some other type of interactive
-media. In these scenarios, content providers need to measure user engagement.
-For example, measuring the number of times users have listened, viewed, clicked
-or otherwise interacted with its embedded content on a given top-level site.
-These measurements are the "currency" of popularity, providing content creators
-with a mechanism for receiving credit for producing content that users enjoy
-consuming. In use cases such as these, a traditional approach for measurement
-involves using third-party cookies or other forms of client-side state. With
-third-party cookies, in particular, content providers can store a persistent
-pseudonymous identifier (e.g. a visitor id) on the client which acts as a
-session key. Content providers can then aggregate user events by visitor id to
-understand user behavior, including anomalous or potentially abusive engagement.
-For example, the ability to differentiate between 100 events from 100 distinct
-users versus 100 events from a single malicious user is paramount for abuse
-modeling and detection.
+Embedding of third-party content in websites and mobile apps is a popular and
+effective technique for increasing user interest and engagement. The embedded
+content could be a social media post, audio, video, or other types of
+interactive media. In many cases, the content is owned by individual content
+creators and not the third-party platform which hosts the content. In order to
+protect the platform and provide creators with insight about how and where their
+content is consumed, third-party hosting platforms must be able to measure user
+engagement. For example, measuring the number of times users have listened,
+viewed, clicked or otherwise interacted with the embedded content on each
+top-level site. This allows for determining content and creator popularity,
+which provides creators with a mechanism for receiving credit on the third-party
+hosting platform ("content provider" hereafter).
 
-To improve user privacy in a third-party context, major browser vendors,
-including [Safari](https://webkit.org/tracking-prevention/),
+A traditional approach for implementing this measurement involves third-party
+cookies or other forms of client-side state. With third-party cookies, content
+providers can store a persistent pseudonymous identifier (e.g. a visitor id) on
+the client, which acts as a session key. Content providers can then aggregate
+user events by visitor id to understand user behavior, including anomalous or
+potentially abusive engagement. For example, the ability to differentiate
+between 100 events from 100 distinct users versus 100 events from a single
+malicious user is paramount for abuse modeling and detection.
+
+To improve user privacy in these contexts, major browser vendors including
+[Safari](https://webkit.org/tracking-prevention/),
 [Mozilla](https://developer.mozilla.org/en-US/docs/Web/Privacy/State_Partitioning)
-and [Chrome](https://github.com/privacycg/CHIPS), have adopted (or have plans to
-adopt) client-side state partitioning by top-level site. Partitioning in this
-manner improves privacy by disallowing client side state from being shared
-across top-level sites, which prevents cross-site tracking. Despite these
-privacy improvements, however, there are still top-level sites and apps that,
-for product-specific reasons, prefer stateless third-party embeddings in which
-both the third-party's servers and client code are restricted from accessing
-local storage or setting cookies (even if partitioned). The result is that
-engagement abuse detection becomes substantially more difficult. In general,
-third party content providers have a legitimate need to protect content creators
-and any cookieless alternative should address those needs, even within
-cookieless environments described above. Specifically, content platforms and
-content creators need the ability to:
+and [Chrome](https://github.com/privacycg/CHIPS), have adopted or have plans to
+adopt client-side state partitioning by top-level site. Partitioning in this
+manner prevents client-side state from being shared across top-level sites,
+which prevents cross-site tracking. Despite these privacy improvements, there
+are still websites and apps that prefer stateless third-party embeddings in
+which the third party is restricted from accessing local storage or setting
+cookies, even if partitioned. The result is that engagement abuse detection
+becomes substantially more difficult. Third-party content providers have a
+legitimate need to protect creators, even within these stateless and cookieless
+environments. Specifically, content providers and content creators need to:
 
-1.  **Accurately measure engagement**. Accurately measuring engagement includes
-    the ability to count engagement events that occurred on each top-level site
-    that embedded a third-party's content. This requires detecting user sessions
-    involved in abuse. For example, if a video is reportedly viewed a million
-    times, it matters whether it is the result of engagement by a large organic
-    audience versus the result of a small number of users manipulating
-    engagement metrics by repeatedly clicking or viewing the content.
+1.  **Accurately measure engagement**. This includes counting engagement events
+    on each top-level embedding site, but also detecting user sessions involved
+    in abuse. For example, if a video is reportedly viewed a million times, it
+    matters whether it is the result of engagement by a large organic audience
+    versus the result of a small number of users manipulating engagement metrics
+    by repeatedly clicking or viewing the content.
 
-2.  **Perform access control**. By access control, we mean the ability of
-    content providers to limit which top-level sites and mobile apps can embed
-    their content. This is necessary to protect users and content creators
-    against abuse that comes from malicious mobile app developers exploiting
-    third-party content in a way that harms users. For example, app clones have
+2.  **Perform access control**. This means the ability of content providers to
+    limit which top-level sites and mobile apps can embed their content. This is
+    necessary to protect users from malicious developers who exploit third-party
+    content in a way that is harmful or misleading. For example, app clones have
     [historically](https://www.cs.umd.edu/class/fall2019/cmsc818O/papers/dissecting-malware.pdf)
     been a popular approach for distribution of
     [malware](https://developers.google.com/android/play-protect/phacategories)
@@ -68,25 +63,23 @@ content creators need the ability to:
 
 ## Overview of Randomized Counter-Abuse Tokens
 
-We propose a new cookieless protocol, called Randomized Counter-Abuse Tokens
-(RCATs), for detecting engagement abuse of third-party web content involving
-top-level sites that require stateless third-party content embeddings. RCATs use
-existing browser features to allow a first party to prevent an embedded third
-party from learning a first-party user's identity, while preserving the ability
-of the third party to detect fraudulent engagement. RCATs encode a group-based
-identifier called RCAT Group ID (shortened to "Group ID" hereafter), in which
-approximately `K` users are randomly assigned to each group and which is
-guaranteed to be stable for a given user for some amount of time (i.e. ideally
-over a period of several weeks). The Group ID is tied to a user's first-party
-identifier, but is unlinkable by any third party who receives the identifier.
-First party servers fully control the randomization, generate the RCAT and pass
-the identifier to the third party as a parameter to the third-party container
-(e.g. iframe or WebView).
+We propose a new protocol "Randomized Counter-Abuse Tokens" (RCATs) for
+detecting engagement abuse of third-party web content involving top-level sites
+that require stateless third-party content embeddings. RCATs leverage existing
+browser features and allow for third parties to detect fraudulent engagement
+while remaining blind to a first-party user's identity. RCATs encode a
+group-based identifier called RCAT Group ID. Approximately `K` users are
+randomly assigned to each group, and the assignment is guaranteed to be stable
+for a given user for some amount of time (i.e. ideally over a period of several
+weeks). The Group ID is tied to a user's first-party identifier, but is
+unlinkable by any third party who receives the Group ID. First party servers
+control the randomization, generate the RCAT, and pass it as a parameter to the
+third-party container (e.g. iframe or WebView).
 
 Third-party content providers can use Group IDs to build statistical models for
 reasoning about abuse. For example, since the set of Group IDs are randomly
 assigned, the set of groups engaged with any piece of third-party content over a
-given period should be uniformly distributed over Group IDs. A user, and
+given time period should be uniformly distributed over Group IDs. A user, and
 therefore their Group ID, engaging with an individual piece of content an
 exceptionally high number of times would result in a non-uniform distribution.
 Similarly two users who are engaged in repeated coordinated activity involving
@@ -294,15 +287,15 @@ areas for all implementations.
 #### Updating N in Response to Population Changes
 
 We assume that a first party can accurately estimate the number of first-party
-users accessing third-party content (N value). However in practice, N may be
-difficult to predict as the number of unique first party users accessing third
-party content may grow or shrink over time. In such cases, a first party can
-recompute the Group IDs for all users by choosing a new
+users accessing third-party content (`N` value). However in practice, `N` may be
+difficult to predict as the number of unique first-party users accessing
+third-party content may grow or shrink over time. In such cases, a first party
+can recompute the Group IDs for all users by choosing a new
 `secret_first_party_salt` and reassigning all users to new groups. More
 incremental approaches for reassigning users to groups are possible, but we
 leave that as future work. We also recommend that in the presence of
 uncertainty, first parties should err on the side of being conservative when
-estimating N. In particular, note that underestimating N will result in a
+estimating `N`. In particular, note that underestimating `N` will result in a
 potentially larger expected number of users per Group ID, which has better
 privacy properties for users than overestimating.
 
@@ -331,7 +324,7 @@ Signing -
 Encryption -
 
 Asymmetric encryption should use "Hybrid Public Key Encryption" (HPKE) as
-defined in [RFC 9180](https://www.rfc-editor.org/rfc/rfc9180.html), with the
+defined in [RFC 9180](https://www.rfc-editor.org/rfc/rfc9180.html) with the
 following primitive values:
 
 *   KEM: X25519
