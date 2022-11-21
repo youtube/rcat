@@ -137,12 +137,7 @@ cryptographic protocols, encryption and secure random number generation. It
 should be noted that:
 
 *   RCATs require the correct protocol implementation by the first party.
-*   We assume a mutual distrust between the user and the third party. Although
-    we do not require the user to trust the first party, we don't believe this
-    is onerous in most use cases of interest. For example, users of an
-    end-to-end encrypted messaging app already rely on the first party to
-    protect their identity as well as privacy sensitive metadata and
-    conversation threads stored at rest on the user's device.
+*   We assume a mutual distrust between the user and the third party.
 *   We require that the first party take reasonable steps to prevent access to
     its service by bots or malicious users known to engage in abuse. For
     example, a first party implementing RCATs must take reasonable steps to
@@ -161,16 +156,16 @@ encrypted (so that only the intended third-party recipient can see the Group ID)
 and signed (to allow authentication and prevent client-side forgery).
 
 Formally, we represent an RCAT as ciphertext that is obtained as a result of
-encrypting the string `CONCAT(issuer_id, sig, content)` with the third party's
-public encryption key, where:
+encrypting the string `CONCAT(issuer_id, signature, payload)` with the third
+party's public encryption key, where:
 
 *   `issuer_id` is a unique 32-bit value assigned by the third party to the
     first party and provided via some out-of-band mechanism. This id provides a
     more secure means of establishing first party identity as compared to
     relying on traditional user agent APIs, such as referer or ancestorOrigins
     (vulnerable to abuse in some contexts).
-*   `sig` is the cryptographic signature over the content generated using the
-    first party's private signing key.
+*   `signature` is the cryptographic signature over the content generated using
+    the first party's private signing key.
 *   `content` is the tuple (`group_id`, `content_binding`, `expiration`).
 
 Once generated, RCATs can be passed to user agents and then forwarded to third
@@ -229,26 +224,28 @@ For use cases where the `content_id` is known to first-party servers, the
 content binding can be obtained by:
 
 <p style="text-align: center;"><code>content_binding =
-Truncate(F<sub>server</sub>(content_id), 8)</code></p>
+Truncate(F<sub>server</sub>(content_id, 0), 8)</code></p>
 
 where <code>F<sub>server</sub></code> is the secure hashing function
-HMAC-SHA-256 keyed on the integer value 0.
+HMAC-SHA-256 keyed on the integer value 0, and the function output is truncated
+to the first 8 bytes.
 
 For end-to-end encrypted applications, first-party servers must be blind to the
 `content_id`. In this case, the client must randomly generate a 256-bit nonce
 (denoted by `client_nonce`) and then compute the binding as:
 
 <p style="text-align: center;"><code>content_binding =
-Truncate(F<sub>client</sub>(content_id), 8)</code></p>
+Truncate(F<sub>client</sub>(content_id, client_nonce), 8)</code></p>
 
 where <code>F<sub>client</sub></code> is the secure hashing function
-HMAC-SHA-256 keyed on the `client_nonce`. The client must then forward
-`content_binding` to the first party server so that it may generate the RCAT,
-and then send the `client_nonce` along with the RCAT to the third party so that
-the third party may verify the binding. The purpose of `client_nonce` is to
-inject entropy to prevent a first party from using a dictionary attack on known
-content ids or inferring when two users consume the same content. As such, the
-`client_nonce` must never be revealed to the first-party's servers.
+HMAC-SHA-256 keyed on the `client_nonce`, and the function output is truncated
+to the first 8 bytes. The client must then forward `content_binding` to the
+first party server so that it may generate the RCAT, and then send the
+`client_nonce` along with the RCAT to the third party so that the third party
+may verify the binding. The purpose of `client_nonce` is to inject entropy to
+prevent a first party from using a dictionary attack on known content ids or
+inferring when two users consume the same content. As such, the `client_nonce`
+must never be revealed to the first-party's servers.
 
 ### Validation
 
@@ -258,10 +255,10 @@ procedure:
 
 1.  Use the third-party's private key to decrypt the ciphertext and obtain the
     (`issuer_id`, `signature`, `payload`) tuple.
-2.  Verify the signature (i.e. `sig`) with the first-party public key and
-    deserialize the payload (`group_id`, `content_binding`, `expiration`).
+2.  Verify the `signature` with the first-party public key and deserialize the
+    `payload` to (`group_id`, `content_binding`, `expiration`).
 3.  Use (`content_id`, `[client_nonce]`) to recompute the content binding and
-    verify that it matches `content_binding` from the payload.
+    verify that it matches `content_binding` from the `payload`.
 4.  Use the time of the current request to verify that the token has not
     expired.
 
@@ -339,8 +336,8 @@ algorithms described above. Note that the generated ciphertext must adhere to
 
 ##### First-party Clients
 
-*   We assume that user agents should have access to a secure
-    [PRNG](https://datatracker.ietf.org/doc/html/rfc4086).
+*   We assume that user agents have access to a secure
+    [pseudorandom number generator (PRNG)](https://datatracker.ietf.org/doc/html/rfc4086#section-6).
 *   Any form of `client_nonce` reuse across multiple content identifiers may
     result in privacy loss. For example, a malicious third party could easily
     use nonces for tracking users across multiple playbacks and begin to infer
@@ -545,9 +542,9 @@ either a browser or the content provider's mobile app.
 
 RCAT is a platform agnostic protocol that allows a first-party to prevent an
 embedded third party from learning a user's first party identity while retaining
-the ability to detect engagement fraud. RCATs are not a User Agent API change
-and address a use case that remains unsolved by User Agents. This section
-contrasts RCATs against existing and related User Agent features.
+the ability to detect engagement fraud. RCATs do not require a user agent API
+change and address a use case that remains unsolved by user agents. This section
+contrasts RCATs against existing and related user agent features.
 
 ### Trust Tokens
 
@@ -589,8 +586,8 @@ via replays. The topical affinity of a FLoC cohort would also have revealed some
 aspects of browsing history, which is not necessary for our use case; RCAT does
 not depend on any user history. Lastly, FLoC cohorts were globally specified,
 and thus would have introduced an avoidable risk of cross-site tracking to our
-application; RCAT values are scoped to only a single top-level slide, so do not
-pose a cross-site tracking threat.
+application. In comparison, RCAT values are scoped to only a single top-level
+site and therefore do not pose a cross-site tracking concern.
 
 ### Partitioned Cookies
 
@@ -604,6 +601,7 @@ extremely limited.
 ## Acknowledgements
 
 We'd like to thank the following individuals for their help in reviewing and
-shaping this proposal: Josh Bao, Kaustubha Govind, Paul Jensen, Michael Kleber,
-Brad Lassey, Fernando Lobato Meeser, Nathan Roach, Daniel Simmons-Marengo,
-Sergei Vassilvitskii, Mike West and Chris Wilson.
+shaping this proposal: Josh Bao, Nick Doty (Center for Democracy and
+Technology), Kaustubha Govind, Joseph Lorenzo Hall (Internet Society), Paul
+Jensen, Michael Kleber, Brad Lassey, Fernando Lobato Meeser, Nathan Roach,
+Daniel Simmons-Marengo, Sergei Vassilvitskii, Mike West and Chris Wilson.
