@@ -1,0 +1,75 @@
+package(default_visibility = ["//src:__subpackages__"])
+
+licenses(["notice"])
+
+java_library(
+    name = "base64_url_byte_buffer_converter",
+    srcs = ["Base64UrlByteBufferConverter.java"],
+    deps = [
+        "//external/deps:guava",
+        "//external/deps:picocli",
+    ],
+)
+
+java_library(
+    name = "keyset_handle_converter",
+    srcs = ["KeysetHandleConverter.java"],
+    deps = [
+        "//external/deps:picocli",
+        "//external/deps:tink",
+    ],
+)
+
+java_library(
+    name = "randomized_counter_abuse_token_converter",
+    srcs = ["RandomizedCounterAbuseTokenConverter.java"],
+    deps = [
+        "//external/deps:guava",
+        "//external/deps:picocli",
+        "//external/deps:protobuf_java",
+        "@rcat_java//proto:rcat_java_proto",
+    ],
+)
+
+java_library(
+    name = "unsigned_integer_converter",
+    srcs = ["UnsignedIntegerConverter.java"],
+    deps = [
+        "//external/deps:guava",
+        "//external/deps:picocli",
+    ],
+)
+
+java_library(
+    name = "validate_token",
+    srcs = ["ValidateToken.java"],
+    deps = [
+        ":randomized_counter_abuse_token_converter",
+        "//external/deps:flogger",
+        "//external/deps:flogger-system-backend",
+        "//external/deps:guava",
+        "//external/deps:picocli",
+        "//external/deps:protobuf_java",
+        "//external/deps:tink",
+        "@rcat_java//proto:rcat_java_proto",
+        "@rcat_java//src/main/java/com/google/rcat:rcat_tink_crypto",
+        "@rcat_java//src/main/java/com/google/rcat:rcat_verifier",
+    ],
+)
+
+java_library(
+    name = "cli",
+    srcs = [
+        "RcatCli.java",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":base64_url_byte_buffer_converter",
+        ":keyset_handle_converter",
+        ":unsigned_integer_converter",
+        ":validate_token",
+        "//external/deps:guava",
+        "//external/deps:picocli",
+        "//external/deps:tink",
+    ],
+)

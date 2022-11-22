@@ -1,0 +1,12 @@
+licenses(["notice"])
+
+java_binary(
+    name = "cli",
+    main_class = "com.google.rcat.cli.RcatCli",
+    visibility = [
+        "//visibility:public",
+    ],
+    runtime_deps = [
+        "//src/main/java/com/google/rcat/cli",
+    ],
+)
