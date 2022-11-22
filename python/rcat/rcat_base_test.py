@@ -49,7 +49,7 @@ class RCATTestCase(parameterized.TestCase):
 
     self._verifier_private_keyset_handle = tink.new_keyset_handle(
         hybrid.hybrid_key_templates
-        .DHKEM_X25519_HKDF_SHA256_HKDF_SHA256_AES_128_GCM)
+        .DHKEM_X25519_HKDF_SHA256_HKDF_SHA256_AES_256_GCM)
     self._verifier_public_keyset_handle = (
         self._verifier_private_keyset_handle.public_keyset_handle())
 
