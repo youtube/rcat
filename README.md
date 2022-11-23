@@ -390,7 +390,9 @@ graph between RCATs and all third party content and then detect dense clusters
     <source media="(prefers-color-scheme: dark)" srcset="doc/images/graph_connected_dark_mode.png">
     <img src="doc/images/graph_connected_light_mode.png">
   </picture>
-  <br/>Diagram 2: Using Randomized Counter-Abuse Tokens for co-visits. In this example, content ids C2 and C3 are only ever visited by R1 and R3, while C4 is only visited by R2.
+  <br/>Diagram 2: Using Randomized Counter-Abuse Tokens for co-visits. In this
+  example, the suspicious cluster consists of infrequently visited content
+  consumed by three Group IDs groups involving abusive users.
 </p>
 
 **False Positives and K.** For both of the applications above, the number of
