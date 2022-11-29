@@ -120,8 +120,9 @@ We assume that:
 2.  Each party has generated a public/private cryptographic key pair, and public
     keys have been exchanged via some out-of-band mechanism. The first-party key
     pair is intended for signing, the third-party key pair is intended for
-    encryption. See more details below regarding the recommended cryptographic
-    schemes.
+    encryption. The first-party signing key should not be reused to create RCATs 
+    for different third parties. See more details below regarding the 
+    recommended cryptographic schemes.
 
 ### Trust Model
 
