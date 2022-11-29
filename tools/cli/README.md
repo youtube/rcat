@@ -39,7 +39,7 @@ To obtain info about arguments available/required for a command, run `cli <comma
 ```sh
 $ cli validate-token \
     --verifier-private-keyset=$PWD/src/main/java/com/google/rcat/cli/verifier-test-private-keyset.tink.json \
-    --issuer-public-keyset=<YOUR_PUBLIC_KEY> \
+    --issuer-public-keyset=$PWD/src/main/java/com/google/rcat/cli/issuer-test-public-keyset.tink.json \
     --issuer-id=1 \
     --token=<BASE64_URL_SAFE_TOKEN> \
     --content-id=<CONTENT_ID>
