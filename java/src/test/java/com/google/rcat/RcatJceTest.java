@@ -32,6 +32,7 @@ import com.google.crypto.tink.subtle.EllipticCurves;
 import com.google.devtools.build.runfiles.Runfiles;
 import com.google.rcat.error.RcatSignatureValidationException;
 import com.google.rcat.proto.RandomizedCounterAbuseToken;
+import java.io.FileInputStream;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -71,7 +72,7 @@ public final class RcatJceTest extends RcatBaseTest {
     Runfiles runfiles = Runfiles.create();
     String issuerPrivateKeysetPath = runfiles.rlocation(ISSUER_PRIVATE_KEYSET_PATH);
     KeysetReader sharedIssuerPrivateKeysetReader =
-        JsonKeysetReader.withPath(issuerPrivateKeysetPath);
+        JsonKeysetReader.withInputStream(new FileInputStream(issuerPrivateKeysetPath.toFile()));
     this.issuerPrivateKeysetHandle = CleartextKeysetHandle.read(sharedIssuerPrivateKeysetReader);
     this.issuerPublicKeysetHandle = this.issuerPrivateKeysetHandle.getPublicKeysetHandle();
 
