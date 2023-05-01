@@ -1,4 +1,7 @@
-package(default_visibility = ["//src:__subpackages__"])
+package(
+    default_applicable_licenses = ["//third_party/rcat:license"],
+    default_visibility = ["//src:__subpackages__"],
+)
 
 alias(
     name = "flogger-system-backend",
