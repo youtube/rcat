@@ -16,20 +16,18 @@
 
 package com.google.rcat.cli;
 
-import com.google.crypto.tink.CleartextKeysetHandle;
-import com.google.crypto.tink.JsonKeysetReader;
+import com.google.crypto.tink.InsecureSecretKeyAccess;
 import com.google.crypto.tink.KeysetHandle;
-import java.io.File;
-import java.io.FileInputStream;
+import com.google.crypto.tink.TinkJsonProtoKeysetFormat;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import picocli.CommandLine.ITypeConverter;
 
 /** Converts the file content at {@code filePath} in a KeysetHandle. */
 final class KeysetHandleConverter implements ITypeConverter<KeysetHandle> {
   @Override
   public KeysetHandle convert(String filePath) throws Exception {
-    // Public Key can be read without `CleartextKeysetHandle` using the normal KeysetHandle API.
-    // This is an effort to centralize the logic.
-    return CleartextKeysetHandle.read(
-        JsonKeysetReader.withInputStream(new FileInputStream(new File(filePath))));
+    return TinkJsonProtoKeysetFormat.parseKeyset(
+        Files.readString(Paths.get(filePath)), InsecureSecretKeyAccess.get());
   }
 }
