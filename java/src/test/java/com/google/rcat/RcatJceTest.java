@@ -17,25 +17,25 @@
 package com.google.rcat;
 
 import static com.google.common.truth.Truth.assertThat;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertThrows;
 
 import com.google.common.io.BaseEncoding;
 import com.google.common.primitives.UnsignedInteger;
-import com.google.crypto.tink.CleartextKeysetHandle;
-import com.google.crypto.tink.JsonKeysetReader;
+import com.google.crypto.tink.InsecureSecretKeyAccess;
 import com.google.crypto.tink.KeyTemplates;
 import com.google.crypto.tink.KeysetHandle;
-import com.google.crypto.tink.KeysetReader;
+import com.google.crypto.tink.TinkJsonProtoKeysetFormat;
 import com.google.crypto.tink.hybrid.HybridConfig;
 import com.google.crypto.tink.signature.SignatureConfig;
 import com.google.crypto.tink.subtle.EllipticCurves;
 import com.google.devtools.build.runfiles.Runfiles;
 import com.google.rcat.error.RcatSignatureValidationException;
 import com.google.rcat.proto.RandomizedCounterAbuseToken;
-import java.io.FileInputStream;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.PrivateKey;
 import java.util.Collections;
@@ -71,9 +71,10 @@ public final class RcatJceTest extends RcatBaseTest {
 
     Runfiles runfiles = Runfiles.create();
     String issuerPrivateKeysetPath = runfiles.rlocation(ISSUER_PRIVATE_KEYSET_PATH);
-    KeysetReader sharedIssuerPrivateKeysetReader =
-        JsonKeysetReader.withInputStream(new FileInputStream(issuerPrivateKeysetPath.toFile()));
-    this.issuerPrivateKeysetHandle = CleartextKeysetHandle.read(sharedIssuerPrivateKeysetReader);
+    this.issuerPrivateKeysetHandle =
+        TinkJsonProtoKeysetFormat.parseKeyset(
+            new String(Files.readAllBytes(issuerPrivateKeysetPath), UTF_8),
+            InsecureSecretKeyAccess.get());
     this.issuerPublicKeysetHandle = this.issuerPrivateKeysetHandle.getPublicKeysetHandle();
 
     this.verifierPrivateKeysetHandle =
