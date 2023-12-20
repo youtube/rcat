@@ -17,6 +17,7 @@
 package com.google.rcat;
 
 import com.google.rcat.proto.RandomizedCounterAbuseToken;
+import java.time.Instant;
 import java.util.Collections;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,13 +55,18 @@ public class RcatTest extends RcatBaseTest {
                 RcatTinkCrypto.Decrypter.withPrivateKeysetHandle(this.verifierPrivateKeysetHandle))
             .build();
 
+    Instant start = Instant.now();
     // First-party client calls the issuer which uses the authenticated identity and content of
     // relevance to generate a RCAT.
-    RandomizedCounterAbuseToken token = issuer.generateToken(this.userId, this.contentId);
+    for (int i = 0; i < 1000; i++) {
+      RandomizedCounterAbuseToken token = issuer.generateToken(this.userId, this.contentId);
 
-    long groupId = verifier.validateToken(token, this.contentId, RcatUtils.EMPTY_NONCE);
+      long groupId = verifier.validateToken(token, this.contentId, RcatUtils.EMPTY_NONCE);
 
-    this.assertGroupId(groupId);
+      this.assertGroupId(groupId);
+    }
+    System.out.println("Time taken:");
+    System.out.println(Instant.now() - start);
   }
 
   @Test
