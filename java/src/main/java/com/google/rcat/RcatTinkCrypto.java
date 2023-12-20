@@ -35,7 +35,7 @@ public final class RcatTinkCrypto {
   /** A {@code Signer} that performs public key signing operation with Tink. */
   public static class Signer implements RcatCrypto.Signer {
 
-    private final KeysetHandle privateKeysetHandle;
+    private final PublicKeySign signer;
 
     /**
      * Computes the signature for {@code data}.
@@ -46,7 +46,6 @@ public final class RcatTinkCrypto {
     @Override
     public byte[] sign(byte[] data) throws RcatSigningException {
       try {
-        PublicKeySign signer = this.privateKeysetHandle.getPrimitive(PublicKeySign.class);
         return signer.sign(data);
       } catch (GeneralSecurityException e) {
         throw new RcatSigningException("Unable to create signature for payload bytes.", e);
@@ -64,14 +63,18 @@ public final class RcatTinkCrypto {
     }
 
     private Signer(KeysetHandle privateKeysetHandle) {
-      this.privateKeysetHandle = privateKeysetHandle;
+      try {
+        this.signer = privateKeysetHandle.getPrimitive(PublicKeySign.class);
+      } catch (GeneralSecurityException e) {
+        throw new IllegalStateException("Unable to create signer", e);
+      }
     }
   }
 
   /** A {@code Verifier} that performs public key signing verification operation with Tink. */
   public static class Verifier implements RcatCrypto.Verifier {
 
-    private final KeysetHandle publicKeysetHandle;
+    private final PublicKeyVerify verifier;
 
     /**
      * Verifies whether {@code signature} is a valid signature for {@code data}.
@@ -82,7 +85,6 @@ public final class RcatTinkCrypto {
     @Override
     public void verify(byte[] signature, byte[] data) throws RcatSignatureValidationException {
       try {
-        PublicKeyVerify verifier = this.publicKeysetHandle.getPrimitive(PublicKeyVerify.class);
         verifier.verify(signature, data);
       } catch (GeneralSecurityException e) {
         throw new RcatSignatureValidationException(
@@ -102,14 +104,19 @@ public final class RcatTinkCrypto {
     }
 
     private Verifier(KeysetHandle publicKeysetHandle) {
-      this.publicKeysetHandle = publicKeysetHandle;
+      try {
+        this.verifier = publicKeysetHandle.getPrimitive(PublicKeyVerify.class);
+      } catch (GeneralSecurityException e) {
+        throw new IllegalStateException("Unable to create verifier", e);
+      }
+      ;
     }
   }
 
   /** An {@code Encrypter} that performs encryption operation with Tink. */
   public static class Encrypter implements RcatCrypto.Encrypter {
 
-    private final KeysetHandle publicKeysetHandle;
+    private final HybridEncrypt encrypter;
 
     /**
      * Encrypts {@code plaintext} binding {@code contextInfo} to the resulting ciphertext.
@@ -120,7 +127,6 @@ public final class RcatTinkCrypto {
     @Override
     public byte[] encrypt(byte[] plaintext, byte[] contextInfo) throws RcatEncryptionException {
       try {
-        HybridEncrypt encrypter = this.publicKeysetHandle.getPrimitive(HybridEncrypt.class);
         return encrypter.encrypt(plaintext, contextInfo);
       } catch (GeneralSecurityException e) {
         throw new RcatEncryptionException("Unable to encrypt RCAT token envelope.", e);
@@ -138,14 +144,18 @@ public final class RcatTinkCrypto {
     }
 
     private Encrypter(KeysetHandle publicKeysetHandle) {
-      this.publicKeysetHandle = publicKeysetHandle;
+      try {
+        this.encrypter = publicKeysetHandle.getPrimitive(HybridEncrypt.class);
+      } catch (GeneralSecurityException e) {
+        throw new IllegalStateException("Unable to create encrypter", e);
+      }
     }
   }
 
   /** An {@code Decrypter} that performs decryption operation with Tink. */
   public static class Decrypter implements RcatCrypto.Decrypter {
 
-    private final KeysetHandle privateKeysetHandle;
+    private final HybridDecrypt decrypter;
 
     /**
      * Decrypts {@code ciphertext} verifying the integrity of {@code contextInfo}.
@@ -156,7 +166,6 @@ public final class RcatTinkCrypto {
     @Override
     public byte[] decrypt(byte[] ciphertext, byte[] contextInfo) throws RcatDecryptionException {
       try {
-        HybridDecrypt decrypter = this.privateKeysetHandle.getPrimitive(HybridDecrypt.class);
         return decrypter.decrypt(ciphertext, contextInfo);
       } catch (GeneralSecurityException e) {
         throw new RcatDecryptionException("Unable to decrypt RCAT token envelope.", e);
@@ -175,7 +184,11 @@ public final class RcatTinkCrypto {
     }
 
     private Decrypter(KeysetHandle privateKeysetHandle) {
-      this.privateKeysetHandle = privateKeysetHandle;
+      try {
+        this.decrypter = privateKeysetHandle.getPrimitive(HybridDecrypt.class);
+      } catch (GeneralSecurityException e) {
+        throw new IllegalStateException("Unable to create decrypter", e);
+      }
     }
   }
 
