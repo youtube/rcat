@@ -21,6 +21,7 @@ import com.google.crypto.tink.HybridEncrypt;
 import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.PublicKeyVerify;
+import com.google.crypto.tink.RegistryConfiguration;
 import com.google.errorprone.annotations.CheckReturnValue;
 import com.google.rcat.error.RcatDecryptionException;
 import com.google.rcat.error.RcatEncryptionException;
@@ -46,7 +47,8 @@ public final class RcatTinkCrypto {
     @Override
     public byte[] sign(byte[] data) throws RcatSigningException {
       try {
-        PublicKeySign signer = this.privateKeysetHandle.getPrimitive(PublicKeySign.class);
+        PublicKeySign signer =
+            this.privateKeysetHandle.getPrimitive(RegistryConfiguration.get(), PublicKeySign.class);
         return signer.sign(data);
       } catch (GeneralSecurityException e) {
         throw new RcatSigningException("Unable to create signature for payload bytes.", e);
@@ -82,7 +84,9 @@ public final class RcatTinkCrypto {
     @Override
     public void verify(byte[] signature, byte[] data) throws RcatSignatureValidationException {
       try {
-        PublicKeyVerify verifier = this.publicKeysetHandle.getPrimitive(PublicKeyVerify.class);
+        PublicKeyVerify verifier =
+            this.publicKeysetHandle.getPrimitive(
+                RegistryConfiguration.get(), PublicKeyVerify.class);
         verifier.verify(signature, data);
       } catch (GeneralSecurityException e) {
         throw new RcatSignatureValidationException(
@@ -120,7 +124,8 @@ public final class RcatTinkCrypto {
     @Override
     public byte[] encrypt(byte[] plaintext, byte[] contextInfo) throws RcatEncryptionException {
       try {
-        HybridEncrypt encrypter = this.publicKeysetHandle.getPrimitive(HybridEncrypt.class);
+        HybridEncrypt encrypter =
+            this.publicKeysetHandle.getPrimitive(RegistryConfiguration.get(), HybridEncrypt.class);
         return encrypter.encrypt(plaintext, contextInfo);
       } catch (GeneralSecurityException e) {
         throw new RcatEncryptionException("Unable to encrypt RCAT token envelope.", e);
@@ -156,7 +161,8 @@ public final class RcatTinkCrypto {
     @Override
     public byte[] decrypt(byte[] ciphertext, byte[] contextInfo) throws RcatDecryptionException {
       try {
-        HybridDecrypt decrypter = this.privateKeysetHandle.getPrimitive(HybridDecrypt.class);
+        HybridDecrypt decrypter =
+            this.privateKeysetHandle.getPrimitive(RegistryConfiguration.get(), HybridDecrypt.class);
         return decrypter.decrypt(ciphertext, contextInfo);
       } catch (GeneralSecurityException e) {
         throw new RcatDecryptionException("Unable to decrypt RCAT token envelope.", e);
