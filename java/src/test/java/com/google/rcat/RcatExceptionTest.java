@@ -23,7 +23,8 @@ import com.google.crypto.tink.HybridEncrypt;
 import com.google.crypto.tink.KeyTemplates;
 import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
-import com.google.crypto.tink.RegistryConfiguration;
+import com.google.crypto.tink.signature.SignatureConfigurationV0;
+import com.google.crypto.tink.hybrid.HybridConfigurationV0;
 import com.google.protobuf.ByteString;
 import com.google.rcat.error.RcatDecryptionException;
 import com.google.rcat.error.RcatExpiredException;
@@ -260,7 +261,7 @@ public class RcatExceptionTest extends RcatBaseTest {
   private byte[] sign(byte[] data, KeysetHandle privateKeysetHandle)
       throws GeneralSecurityException {
     PublicKeySign signer =
-        privateKeysetHandle.getPrimitive(RegistryConfiguration.get(), PublicKeySign.class);
+        privateKeysetHandle.getPrimitive(SignatureConfigurationV0.get(), PublicKeySign.class);
     return signer.sign(data);
   }
 
@@ -271,7 +272,7 @@ public class RcatExceptionTest extends RcatBaseTest {
   private byte[] encrypt(byte[] data, KeysetHandle publicKeysetHandle)
       throws GeneralSecurityException {
     HybridEncrypt encrypter =
-        publicKeysetHandle.getPrimitive(RegistryConfiguration.get(), HybridEncrypt.class);
+        publicKeysetHandle.getPrimitive(HybridConfigurationV0.get(), HybridEncrypt.class);
     return encrypter.encrypt(data, new byte[0]);
   }
 }
