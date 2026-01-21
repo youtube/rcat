@@ -541,21 +541,22 @@ the ability to detect engagement fraud. RCATs do not require a user agent API
 change and address a use case that remains unsolved by user agents. This section
 contrasts RCATs against existing and related user agent features.
 
-### Trust Tokens
+### Private State Tokens
 
 Similar to RCAT,
-[Trust tokens](https://developer.chrome.com/docs/privacy-sandbox/trust-tokens/)
-(TTs) require a trusted first party to issue tokens to a user which can be later
-redeemed in a third-party context. Trust tokens have strong privacy properties
-as neither a first party nor a third party can link a token issued to a user
-with their first-party identity. In practice, however, their strong privacy
-properties makes their counter-abuse properties extremely poor. Since TTs are
-unlinkable and not bound to any specific context, a malicious adversary can use
-TTs stolen from trusted users to falsely assert trust while engaging in abuse.
-Furthermore, tokens issued to first-party users that are later determined to be
-untrustworthy cannot be immediately revoked. The fact that they are untraceable
-to both parties makes them impractical for protecting against the threat models
-described in the "RCAT-Based Abuse Detection" section of this doc.
+[Private State Tokens](https://developer.chrome.com/docs/privacy-sandbox/trust-tokens/)
+(PSTs) require a trusted first party to issue tokens to a user which can be
+later redeemed in a third-party context. Private State Tokens have strong
+privacy properties as neither a first party nor a third party can link a token
+issued to a user with their first-party identity. In practice, however, their
+strong privacy properties makes their counter-abuse properties extremely poor.
+Since PSTs are unlinkable and not bound to any specific context, a malicious
+adversary can use PSTs stolen from trusted users to falsely assert trust while
+engaging in abuse. Furthermore, tokens issued to first-party users that are
+later determined to be untrustworthy cannot be immediately revoked. The fact
+that they are untraceable to both parties makes them impractical for protecting
+against the threat models described in the "RCAT-Based Abuse Detection" section
+of this doc.
 
 In comparison, note that RCATs:
 
@@ -565,9 +566,9 @@ In comparison, note that RCATs:
     be made aware of the mapping.
 2.  Support content binding, which binds RCATs to third-party content and limits
     the scope of any potential misuse.
-3.  Does not require access to a user agent's partitioned storage. TT redemption
-    implementations typically require the creation of a Signed Redemption Record
-    (SRR) that must be cached on the user's device.
+3.  Does not require access to a user agent's partitioned storage. PST
+    redemption implementations typically require the creation of a Signed
+    Redemption Record (SRR) that must be cached on the user's device.
 
 ### FLoC
 
