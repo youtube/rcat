@@ -21,11 +21,13 @@ import static org.junit.Assert.assertThrows;
 
 import com.google.common.io.BaseEncoding;
 import com.google.common.primitives.UnsignedInteger;
-import com.google.crypto.tink.CleartextKeysetHandle;
+import com.google.crypto.tink.InsecureSecretKeyAccess;
 import com.google.crypto.tink.JsonKeysetReader;
 import com.google.crypto.tink.KeyTemplates;
 import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.KeysetReader;
+import com.google.crypto.tink.LegacyKeysetSerialization;
+import com.google.crypto.tink.RegistryConfiguration;
 import com.google.crypto.tink.hybrid.HybridConfig;
 import com.google.crypto.tink.signature.SignatureConfig;
 import com.google.crypto.tink.subtle.EllipticCurves;
@@ -73,7 +75,11 @@ public final class RcatJceTest extends RcatBaseTest {
     String issuerPrivateKeysetPath = runfiles.rlocation(ISSUER_PRIVATE_KEYSET_PATH);
     KeysetReader sharedIssuerPrivateKeysetReader =
         JsonKeysetReader.withInputStream(new FileInputStream(issuerPrivateKeysetPath.toFile()));
-    this.issuerPrivateKeysetHandle = CleartextKeysetHandle.read(sharedIssuerPrivateKeysetReader);
+    this.issuerPrivateKeysetHandle =
+        LegacyKeysetSerialization.parseKeyset(
+            sharedIssuerPrivateKeysetReader,
+            InsecureSecretKeyAccess.get(),
+            RegistryConfiguration.get());
     this.issuerPublicKeysetHandle = this.issuerPrivateKeysetHandle.getPublicKeysetHandle();
 
     this.verifierPrivateKeysetHandle =
