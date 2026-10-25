@@ -19,7 +19,7 @@ package com.google.rcat.error;
 /**
  * Exception thrown when the content binding for RCAT is invalid.
  *
- * <p>When a Randomized Counter-Abuse Token is issued, it can be binded to a nonce value which will
+ * <p>When a Randomized Counter-Abuse Token is issued, it can be bound to a nonce value which will
  * be communicated to the first-party for verification. It prevents the token from being stolen and
  * reused outside the content for which it was intended. See RCAT explainer for more details.
  */
