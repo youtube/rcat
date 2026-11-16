@@ -19,6 +19,7 @@ package com.google.rcat.cli;
 import com.google.crypto.tink.InsecureSecretKeyAccess;
 import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.TinkJsonProtoKeysetFormat;
+import com.google.crypto.tink.config.TinkConfig2026;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import picocli.CommandLine.ITypeConverter;
@@ -28,6 +29,8 @@ final class KeysetHandleConverter implements ITypeConverter<KeysetHandle> {
   @Override
   public KeysetHandle convert(String filePath) throws Exception {
     return TinkJsonProtoKeysetFormat.parseKeyset(
-        Files.readString(Paths.get(filePath)), InsecureSecretKeyAccess.get());
+        Files.readString(Paths.get(filePath)),
+        TinkConfig2026.get(),
+        InsecureSecretKeyAccess.get());
   }
 }
